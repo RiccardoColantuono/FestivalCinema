@@ -6,33 +6,42 @@
 
 <div class="container">
 	<div class="d-flex justify-content-between align-items-center mb-4">
-		<h2 class="mb-0">Film</h2>
+		<h2 class="mb-0">🎬 Film</h2>
 		<a sec:authorize="hasAuthority('ADMIN')" class="btn btn-success" th:href="@{/admin/film/nuovo}">+ Nuovo film</a>
 	</div>
 
+	<!-- Ricerca per titolo, genere o regista (Sezione 9) -->
 	<form class="row g-2 mb-4" method="get" th:action="@{/film}">
-		<div class="col-md-4">
-			<input type="text" name="titolo" class="form-control" placeholder="Cerca per titolo" th:value="${param.titolo}">
+		<div class="col-md-3">
+			<input type="text" name="titolo" class="form-control" placeholder="Cerca per titolo" th:value="${titolo}">
 		</div>
 		<div class="col-md-3">
-			<input type="text" name="genere" class="form-control" placeholder="Genere" th:value="${param.genere}">
+			<input type="text" name="genere" class="form-control" placeholder="Genere" th:value="${genere}">
 		</div>
 		<div class="col-md-2">
-			<input type="number" name="anno" class="form-control" placeholder="Anno" th:value="${param.anno}">
+			<input type="number" name="anno" class="form-control" placeholder="Anno" th:value="${anno}">
+		</div>
+		<div class="col-md-2">
+			<input type="text" name="regista" class="form-control" placeholder="Regista" th:value="${regista}">
 		</div>
 		<div class="col-md-2">
 			<button type="submit" class="btn btn-primary w-100">Cerca</button>
 		</div>
 	</form>
 
-	<div class="alert alert-info" th:if="${#lists.isEmpty(film)}">Nessun film trovato.</div>
+	<div class="alert alert-info" th:if="${filmPage.empty}">Nessun film trovato.</div>
 
-	<div class="row row-cols-1 row-cols-md-3 g-4">
-		<div class="col" th:each="f : ${film}">
+	<div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+		<div class="col" th:each="f : ${filmPage.content}">
 			<div class="card h-100">
+				<img th:if="${f.locandina}" th:src="@{'/uploads/' + ${f.locandina}}" class="card-img-top"
+				     style="height: 220px; object-fit: cover;" alt="Locandina">
 				<div class="card-body">
 					<h5 class="card-title" th:text="${f.titolo}">Titolo</h5>
-					<h6 class="card-subtitle mb-2 text-muted" th:text="${f.anno} + ' • ' + ${f.genere}">Anno - Genere</h6>
+					<p class="mb-2">
+						<span class="text-muted" th:text="${f.anno}">Anno</span>
+						<span th:if="${f.genere}" th:replace="~{fragments/common :: badgeGenere(${f.genere})}"></span>
+					</p>
 					<p class="card-text small"
 					   th:text="${f.regista != null ? f.regista.nome + ' ' + f.regista.cognome : ''}">Regista</p>
 					<a th:href="@{/film/{id}(id=${f.id})}" class="btn btn-outline-primary">Dettagli</a>
@@ -40,6 +49,26 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Paginazione -->
+	<nav th:if="${filmPage.totalPages > 1}" aria-label="Paginazione film">
+		<ul class="pagination justify-content-center">
+			<li class="page-item" th:classappend="${filmPage.first} ? 'disabled'">
+				<a class="page-link"
+				   th:href="@{/film(titolo=${titolo},genere=${genere},anno=${anno},regista=${regista},page=${filmPage.number - 1})}">Precedente</a>
+			</li>
+			<li class="page-item" th:each="i : ${#numbers.sequence(0, filmPage.totalPages - 1)}"
+			    th:classappend="${i == filmPage.number} ? 'active'">
+				<a class="page-link"
+				   th:href="@{/film(titolo=${titolo},genere=${genere},anno=${anno},regista=${regista},page=${i})}"
+				   th:text="${i + 1}">1</a>
+			</li>
+			<li class="page-item" th:classappend="${filmPage.last} ? 'disabled'">
+				<a class="page-link"
+				   th:href="@{/film(titolo=${titolo},genere=${genere},anno=${anno},regista=${regista},page=${filmPage.number + 1})}">Successiva</a>
+			</li>
+		</ul>
+	</nav>
 </div>
 
 <footer th:replace="~{fragments/common :: footer}"></footer>

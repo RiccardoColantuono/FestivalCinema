@@ -46,6 +46,10 @@ public class Festival {
 	@Column(length = 2000)
 	private String descrizione;
 
+	// Nome del file caricato (vedi FileStorageService); l'URL pubblico si ricostruisce
+	// come /uploads/<immagineCopertina> (vedi WebConfig). Null se non caricata.
+	private String immagineCopertina;
+
 	// Lato proprietario della relazione molti-a-molti (Sezione 3 e 11).
 	// LAZY: la lista dei film non serve quando si mostra solo l'elenco dei festival
 	// (Sezione 4.1), ma solo nel dettaglio -> evitiamo un caricamento inutile.
@@ -118,6 +122,14 @@ public class Festival {
 
 	public void setDescrizione(String descrizione) {
 		this.descrizione = descrizione;
+	}
+
+	public String getImmagineCopertina() {
+		return immagineCopertina;
+	}
+
+	public void setImmagineCopertina(String immagineCopertina) {
+		this.immagineCopertina = immagineCopertina;
 	}
 
 	public List<Film> getFilm() {

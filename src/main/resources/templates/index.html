@@ -6,12 +6,47 @@
 
 <div class="container">
 	<div class="p-5 mb-4 bg-body-tertiary rounded-3">
-		<h1 class="display-5 fw-bold">Festival Cinema</h1>
+		<h1 class="display-5 fw-bold">🎬 Festival Cinema</h1>
 		<p class="col-md-8 fs-4">
 			Scopri i festival cinematografici in programma, sfoglia i film partecipanti,
 			consulta il programma delle proiezioni e leggi le recensioni della community.
 		</p>
 		<a class="btn btn-primary btn-lg" th:href="@{/festival}">Vai ai festival</a>
+	</div>
+
+	<div class="row row-cols-1 row-cols-md-4 g-3 mb-5">
+		<div class="col">
+			<a th:href="@{/festival}" class="text-decoration-none">
+				<div class="card h-100 text-center p-3" style="border-top: 4px solid #b385e0;">
+					<div style="font-size: 2rem;">🎪</div>
+					<div class="fw-semibold mt-1">Festival</div>
+				</div>
+			</a>
+		</div>
+		<div class="col">
+			<a th:href="@{/film}" class="text-decoration-none">
+				<div class="card h-100 text-center p-3" style="border-top: 4px solid #5aa9ea;">
+					<div style="font-size: 2rem;">🎬</div>
+					<div class="fw-semibold mt-1">Film</div>
+				</div>
+			</a>
+		</div>
+		<div class="col">
+			<a th:href="@{/proiezioni}" class="text-decoration-none">
+				<div class="card h-100 text-center p-3" style="border-top: 4px solid #f0a84e;">
+					<div style="font-size: 2rem;">🕒</div>
+					<div class="fw-semibold mt-1">Proiezioni</div>
+				</div>
+			</a>
+		</div>
+		<div class="col">
+			<a th:href="@{/statistiche}" class="text-decoration-none">
+				<div class="card h-100 text-center p-3" style="border-top: 4px solid #4fc27d;">
+					<div style="font-size: 2rem;">📊</div>
+					<div class="fw-semibold mt-1">Statistiche</div>
+				</div>
+			</a>
+		</div>
 	</div>
 </div>
 

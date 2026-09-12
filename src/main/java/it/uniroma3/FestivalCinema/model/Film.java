@@ -42,6 +42,10 @@ public class Film {
 
 	private String paeseProduzione;
 
+	// Nome del file caricato (vedi FileStorageService); l'URL pubblico si ricostruisce
+	// come /uploads/<locandina> (vedi WebConfig). Null se non e' stata caricata nessuna locandina.
+	private String locandina;
+
 	// ManyToOne: fetch EAGER di default in JPA, lo rendiamo esplicito.
 	// Il regista e' quasi sempre necessario insieme al film (es. nel dettaglio
 	// film, Sezione 4.1), quindi EAGER e' motivato qui.
@@ -113,6 +117,14 @@ public class Film {
 
 	public void setPaeseProduzione(String paeseProduzione) {
 		this.paeseProduzione = paeseProduzione;
+	}
+
+	public String getLocandina() {
+		return locandina;
+	}
+
+	public void setLocandina(String locandina) {
+		this.locandina = locandina;
 	}
 
 	public Regista getRegista() {

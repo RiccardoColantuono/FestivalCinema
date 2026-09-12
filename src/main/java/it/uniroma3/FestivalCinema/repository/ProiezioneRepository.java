@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,4 +37,19 @@ public interface ProiezioneRepository extends JpaRepository<Proiezione, Long> {
 	List<Proiezione> findByFestivalIdWithFilmESalaJoinFetch(@Param("festivalId") Long festivalId);
 
 	Optional<Proiezione> findById(Long id);
+
+	// Ricerca delle proiezioni per data (con festival opzionale), impaginata.
+	// Festival/Film/Sala sono EAGER su Proiezione (Sezione 8.1) e con fetch mode
+	// JOIN di default per le associazioni EAGER: nessun problema N+1 qui pur
+	// senza un JOIN FETCH esplicito.
+	@Query(value = "SELECT p FROM Proiezione p WHERE "
+		+ "(:data IS NULL OR p.data = :data) AND "
+		+ "(:festivalId IS NULL OR p.festival.id = :festivalId) "
+		+ "ORDER BY p.data ASC, p.ora ASC",
+		countQuery = "SELECT COUNT(p) FROM Proiezione p WHERE "
+		+ "(:data IS NULL OR p.data = :data) AND "
+		+ "(:festivalId IS NULL OR p.festival.id = :festivalId)")
+	Page<Proiezione> cerca(@Param("data") LocalDate data,
+	                        @Param("festivalId") Long festivalId,
+	                        Pageable pageable);
 }

@@ -10,9 +10,10 @@ public class FestivalDTO {
 	private String dataInizio;
 	private String dataFine;
 	private String descrizione;
+	private String immagineCopertina;
 
 	public FestivalDTO(Long id, String nome, Integer anno, String citta, String dataInizio,
-	                    String dataFine, String descrizione) {
+	                    String dataFine, String descrizione, String immagineCopertina) {
 		this.id = id;
 		this.nome = nome;
 		this.anno = anno;
@@ -20,13 +21,14 @@ public class FestivalDTO {
 		this.dataInizio = dataInizio;
 		this.dataFine = dataFine;
 		this.descrizione = descrizione;
+		this.immagineCopertina = immagineCopertina;
 	}
 
 	public static FestivalDTO from(Festival f) {
 		return new FestivalDTO(f.getId(), f.getNome(), f.getAnno(), f.getCitta(),
 			f.getDataInizio() != null ? f.getDataInizio().toString() : null,
 			f.getDataFine() != null ? f.getDataFine().toString() : null,
-			f.getDescrizione());
+			f.getDescrizione(), f.getImmagineCopertina());
 	}
 
 	public Long getId() { return id; }
@@ -36,4 +38,6 @@ public class FestivalDTO {
 	public String getDataInizio() { return dataInizio; }
 	public String getDataFine() { return dataFine; }
 	public String getDescrizione() { return descrizione; }
+	// Nome del file: il client ricostruisce l'URL come /uploads/<immagineCopertina>.
+	public String getImmagineCopertina() { return immagineCopertina; }
 }

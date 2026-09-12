@@ -3,20 +3,25 @@ package it.uniroma3.FestivalCinema.controller;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import it.uniroma3.FestivalCinema.dto.PaginaDTO;
 import it.uniroma3.FestivalCinema.dto.ProiezioneDTO;
 import it.uniroma3.FestivalCinema.model.Proiezione;
 import it.uniroma3.FestivalCinema.service.ProiezioneService;
 
 // Sezione 4.3: programmazione/modifica/cancellazione proiezioni, riservate ad ADMIN
 // (vedi SecurityConfig). E' il controller che espone il caso d'uso transazionale
-// multi-entita' descritto in ProiezioneService.programmaProiezione(...).
+// multi-entita' descritto in ProiezioneService.programmaProiezione(...), oltre
+// alla ricerca pubblica delle proiezioni per data (Sezione 9).
 @RestController
 @RequestMapping("/api/proiezioni")
 public class ProiezioneApiController {
+
+	private static final int DIMENSIONE_PAGINA = 15;
 
 	private final ProiezioneService proiezioneService;
 
@@ -29,6 +34,15 @@ public class ProiezioneApiController {
 	}
 
 	public record AggiornaProiezioneRequest(Proiezione.Stato stato, LocalDate data, LocalTime ora) {
+	}
+
+	// GET /api/proiezioni?data=&festivalId=&page= (ricerca per data, impaginata)
+	@GetMapping
+	public PaginaDTO<ProiezioneDTO> cerca(@RequestParam(required = false) LocalDate data,
+	                                       @RequestParam(required = false) Long festivalId,
+	                                       @RequestParam(defaultValue = "0") int page) {
+		var risultato = this.proiezioneService.cerca(data, festivalId, PageRequest.of(page, DIMENSIONE_PAGINA));
+		return PaginaDTO.from(risultato, ProiezioneDTO::from);
 	}
 
 	@PostMapping

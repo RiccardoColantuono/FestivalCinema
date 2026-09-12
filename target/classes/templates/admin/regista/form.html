@@ -10,6 +10,10 @@
 	<form th:action="${regista.id} == null ? @{/admin/registi} : @{/admin/registi/{id}(id=${regista.id})}"
 	      th:object="${regista}" method="post">
 
+		<div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+			<div th:each="errore : ${#fields.errors('*')}" th:text="${errore}">Errore</div>
+		</div>
+
 		<div class="mb-3">
 			<label class="form-label">Nome</label>
 			<input type="text" th:field="*{nome}" class="form-control" required>

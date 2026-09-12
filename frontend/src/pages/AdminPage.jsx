@@ -16,15 +16,18 @@ export default function AdminPage() {
 	function ricaricaTutto() {
 		api.get('/api/registi').then(setRegisti).catch(() => {})
 		api.get('/api/sale').then(setSale).catch(() => {})
-		api.get('/api/festival').then(setFestival).catch(() => {})
-		api.get('/api/movies').then(setFilm).catch(() => {})
+		// size grande: qui servono TUTTI i festival/film per popolare le select,
+		// non una pagina di navigazione (vedi FestivalListPage/FilmListPage per
+		// quella impaginata rivolta all'utente).
+		api.get('/api/festival?size=1000').then((pagina) => setFestival(pagina.contenuto)).catch(() => {})
+		api.get('/api/movies?size=1000').then((pagina) => setFilm(pagina.contenuto)).catch(() => {})
 	}
 
 	useEffect(ricaricaTutto, [])
 
 	return (
 		<div className="container">
-			<h2>Pannello admin</h2>
+			<h2>🛠️ Pannello admin</h2>
 			<p className="messaggio">
 				Ogni form qui sotto chiama direttamente un endpoint di <code>/api/**</code>.
 			</p>
@@ -88,7 +91,7 @@ function NuovoRegistaForm({ onCreato }) {
 
 	return (
 		<form className="form-box" onSubmit={handleSubmit}>
-			<h3 style={{ margin: 0 }}>Nuovo regista</h3>
+			<h3 style={{ margin: 0 }}>🎭 Nuovo regista</h3>
 			<label>Nome<input required {...campo('nome')} /></label>
 			<label>Cognome<input required {...campo('cognome')} /></label>
 			<label>Data di nascita<input type="date" {...campo('dataNascita')} /></label>
@@ -119,7 +122,7 @@ function NuovaSalaForm({ onCreato }) {
 
 	return (
 		<form className="form-box" onSubmit={handleSubmit}>
-			<h3 style={{ margin: 0 }}>Nuova sala</h3>
+			<h3 style={{ margin: 0 }}>🏛️ Nuova sala</h3>
 			<label>Nome<input required {...campo('nome')} /></label>
 			<label>Indirizzo<input {...campo('indirizzo')} /></label>
 			<label>Capienza<input type="number" min="1" required {...campo('capienza')} /></label>
@@ -149,7 +152,7 @@ function NuovoFestivalForm({ onCreato }) {
 
 	return (
 		<form className="form-box" onSubmit={handleSubmit}>
-			<h3 style={{ margin: 0 }}>Nuovo festival</h3>
+			<h3 style={{ margin: 0 }}>🎪 Nuovo festival</h3>
 			<label>Nome<input required {...campo('nome')} /></label>
 			<label>Anno<input type="number" required {...campo('anno')} /></label>
 			<label>Citta'<input {...campo('citta')} /></label>
@@ -195,7 +198,7 @@ function NuovoFilmForm({ registi, onCreato }) {
 
 	return (
 		<form className="form-box" onSubmit={handleSubmit}>
-			<h3 style={{ margin: 0 }}>Nuovo film</h3>
+			<h3 style={{ margin: 0 }}>🎬 Nuovo film</h3>
 			<label>Titolo<input required {...campo('titolo')} /></label>
 			<label>Anno<input type="number" required {...campo('anno')} /></label>
 			<label>Durata (minuti)<input type="number" required {...campo('durata')} /></label>
@@ -229,7 +232,7 @@ function AssociaFilmFestivalForm({ festival, film }) {
 
 	return (
 		<form className="form-box" onSubmit={handleSubmit}>
-			<h3 style={{ margin: 0 }}>Associa un film a un festival</h3>
+			<h3 style={{ margin: 0 }}>🔗 Associa un film a un festival</h3>
 			<label>
 				Festival
 				<select required value={festivalId} onChange={(e) => setFestivalId(e.target.value)}>
@@ -272,7 +275,7 @@ function ProgrammaProiezioneForm({ festival, film, sale }) {
 
 	return (
 		<form className="form-box" onSubmit={handleSubmit}>
-			<h3 style={{ margin: 0 }}>Programma una proiezione</h3>
+			<h3 style={{ margin: 0 }}>🕒 Programma una proiezione</h3>
 			<label>
 				Festival
 				<select required value={dati.festivalId} onChange={(e) => setDati({ ...dati, festivalId: e.target.value })}>

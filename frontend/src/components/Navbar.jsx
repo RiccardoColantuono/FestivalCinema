@@ -13,11 +13,13 @@ export default function Navbar() {
 	return (
 		<nav className="navbar">
 			<div className="navbar-inner">
-				<Link className="brand" to="/">Festival Cinema</Link>
+				<Link className="brand" to="/">🎬 Festival Cinema</Link>
 				<div className="nav-links">
-					<Link to="/">Festival</Link>
-					<Link to="/film">Film</Link>
-					{utente?.admin && <Link to="/admin">Admin</Link>}
+					<Link className="cat-festival" to="/">🎪 Festival</Link>
+					<Link className="cat-film" to="/film">🎬 Film</Link>
+					<Link className="cat-proiezioni" to="/proiezioni">🕒 Proiezioni</Link>
+					<Link className="cat-statistiche" to="/statistiche">📊 Statistiche</Link>
+					{utente?.admin && <Link className="cat-admin" to="/admin">🛠️ Admin</Link>}
 				</div>
 				<div className="nav-auth">
 					{utente ? (

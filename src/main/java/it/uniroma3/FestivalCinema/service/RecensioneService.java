@@ -1,13 +1,17 @@
 package it.uniroma3.FestivalCinema.service;
 
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import it.uniroma3.FestivalCinema.dto.FilmConMediaDTO;
+import it.uniroma3.FestivalCinema.dto.StatisticheRecensioniDTO;
 import it.uniroma3.FestivalCinema.model.Film;
 import it.uniroma3.FestivalCinema.model.Recensione;
 import it.uniroma3.FestivalCinema.model.Utente;
@@ -91,5 +95,31 @@ public class RecensioneService {
 		}
 
 		this.recensioneRepository.delete(recensione);
+	}
+
+	// Statistiche sulle recensioni di un film: voto medio e distribuzione dei
+	// voti da 1 a 5 (mostrate nella pagina di dettaglio del film).
+	@Transactional(readOnly = true)
+	public StatisticheRecensioniDTO statistichePerFilm(Long filmId) {
+		long numero = this.recensioneRepository.countByFilmId(filmId);
+		Double media = numero == 0 ? null : this.recensioneRepository.mediaVotoPerFilm(filmId);
+
+		Map<Integer, Long> distribuzione = new LinkedHashMap<>();
+		for (int voto = 1; voto <= 5; voto++) {
+			distribuzione.put(voto, 0L);
+		}
+		for (Object[] riga : this.recensioneRepository.distribuzioneVotiPerFilm(filmId)) {
+			distribuzione.put((Integer) riga[0], (Long) riga[1]);
+		}
+
+		return new StatisticheRecensioniDTO(numero, media, distribuzione);
+	}
+
+	// Classifica dei film per voto medio (statistiche generali sulle recensioni).
+	@Transactional(readOnly = true)
+	public List<FilmConMediaDTO> classificaFilmPerVotoMedio() {
+		return this.recensioneRepository.classificaFilmPerVotoMedio().stream()
+			.map(riga -> new FilmConMediaDTO((Film) riga[0], (Double) riga[1], (Long) riga[2]))
+			.toList();
 	}
 }

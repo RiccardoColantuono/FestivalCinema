@@ -10,14 +10,20 @@ public class ProiezioneDTO {
 	private String stato;
 	private FilmDTO film;
 	private SalaDTO sala;
+	// Necessario per la ricerca proiezioni cross-festival (GET /api/proiezioni):
+	// nel programma di un singolo festival questo campo e' ridondante (il
+	// festival e' gia' noto dal contesto della pagina), ma li' non da' fastidio.
+	private FestivalDTO festival;
 
-	public ProiezioneDTO(Long id, String data, String ora, String stato, FilmDTO film, SalaDTO sala) {
+	public ProiezioneDTO(Long id, String data, String ora, String stato, FilmDTO film, SalaDTO sala,
+	                      FestivalDTO festival) {
 		this.id = id;
 		this.data = data;
 		this.ora = ora;
 		this.stato = stato;
 		this.film = film;
 		this.sala = sala;
+		this.festival = festival;
 	}
 
 	public static ProiezioneDTO from(Proiezione p) {
@@ -27,7 +33,8 @@ public class ProiezioneDTO {
 			p.getOra() != null ? p.getOra().toString() : null,
 			p.getStato() != null ? p.getStato().name() : null,
 			p.getFilm() != null ? FilmDTO.from(p.getFilm()) : null,
-			p.getSala() != null ? SalaDTO.from(p.getSala()) : null
+			p.getSala() != null ? SalaDTO.from(p.getSala()) : null,
+			p.getFestival() != null ? FestivalDTO.from(p.getFestival()) : null
 		);
 	}
 
@@ -37,4 +44,5 @@ public class ProiezioneDTO {
 	public String getStato() { return stato; }
 	public FilmDTO getFilm() { return film; }
 	public SalaDTO getSala() { return sala; }
+	public FestivalDTO getFestival() { return festival; }
 }

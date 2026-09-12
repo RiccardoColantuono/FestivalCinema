@@ -66,16 +66,25 @@ public class SecurityConfig {
 					"/", "/login", "/register", "/error",
 					"/festival", "/festival/**",
 					"/film", "/film/**",
+					"/proiezioni", "/proiezioni/**",
+					"/statistiche",
+					"/uploads/**",
 					"/api/**",
 					"/css/**", "/js/**", "/images/**"
 				).permitAll()
 				.requestMatchers(HttpMethod.POST, "/register").permitAll()
 				.requestMatchers("/recensioni/**").authenticated()
-				.requestMatchers(HttpMethod.POST, "/api/film/*/recensioni").authenticated()
+				// NOTA: era "/api/film/*/recensioni" (path inesistente: l'endpoint reale e'
+				// /api/movies/{id}/reviews); il fallback .anyRequest().authenticated() in
+				// fondo copriva comunque il caso, questo lo rende esplicito e corretto.
+				.requestMatchers(HttpMethod.POST, "/api/movies/*/reviews").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/api/recensioni/**").authenticated()
 				.requestMatchers(HttpMethod.DELETE, "/api/recensioni/**").authenticated()
 				.requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
-				.requestMatchers(HttpMethod.POST, "/api/festival/**", "/api/film/**", "/api/registi/**",
+				// NOTA: era erroneamente "/api/film/**" (path inesistente: FilmApiController
+				// espone /api/movies/**), che lasciava POST /api/movies raggiungibile da
+				// qualunque utente autenticato invece che dal solo ADMIN. Corretto qui.
+				.requestMatchers(HttpMethod.POST, "/api/festival/**", "/api/movies/**", "/api/registi/**",
 					"/api/sale/**", "/api/proiezioni/**").hasAnyAuthority("ADMIN")
 				.requestMatchers(HttpMethod.PUT, "/api/festival/**", "/api/proiezioni/**")
 					.hasAnyAuthority("ADMIN")

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('Statistiche')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: navbar}"></nav>
+
+<div class="container">
+	<h2 class="mb-1">📊 Statistiche sulle recensioni</h2>
+	<p class="text-muted mb-4">Classifica dei film per voto medio (solo film con almeno una recensione).</p>
+
+	<div class="alert alert-info" th:if="${#lists.isEmpty(classifica)}">Nessuna recensione ancora inserita.</div>
+
+	<table class="table table-striped" th:if="${!#lists.isEmpty(classifica)}">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Film</th>
+				<th>Voto medio</th>
+				<th>Recensioni</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="riga, stato : ${classifica}">
+				<td th:switch="${stato.count}">
+					<span th:case="1">🥇</span>
+					<span th:case="2">🥈</span>
+					<span th:case="3">🥉</span>
+					<span th:case="*" th:text="${stato.count}">4</span>
+				</td>
+				<td><a th:href="@{/film/{id}(id=${riga.film.id})}" th:text="${riga.film.titolo}">Titolo</a></td>
+				<td th:text="${#numbers.formatDecimal(riga.votoMedio, 1, 1)} + '/5'">4.5/5</td>
+				<td th:text="${riga.numeroRecensioni}">10</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<footer th:replace="~{fragments/common :: footer}"></footer>
+</body>
+</html>

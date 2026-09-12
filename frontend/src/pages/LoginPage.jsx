@@ -23,7 +23,7 @@ export default function LoginPage() {
 
 	return (
 		<div className="container">
-			<h2>Accedi</h2>
+			<h2>👋 Accedi</h2>
 			<form className="form-box" onSubmit={handleSubmit}>
 				<label>
 					Username

@@ -3,6 +3,9 @@ package it.uniroma3.FestivalCinema.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,10 +14,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import it.uniroma3.FestivalCinema.model.Festival;
 import it.uniroma3.FestivalCinema.model.Film;
 import it.uniroma3.FestivalCinema.service.FestivalService;
+import it.uniroma3.FestivalCinema.service.FileStorageService;
 import it.uniroma3.FestivalCinema.service.FilmService;
 import it.uniroma3.FestivalCinema.service.ProiezioneService;
 import jakarta.validation.Valid;
@@ -22,22 +27,36 @@ import jakarta.validation.Valid;
 @Controller
 public class FestivalController {
 
+	private static final int DIMENSIONE_PAGINA = 9;
+
 	private final FestivalService festivalService;
 	private final ProiezioneService proiezioneService;
 	private final FilmService filmService;
+	private final FileStorageService fileStorageService;
 
 	public FestivalController(FestivalService festivalService, ProiezioneService proiezioneService,
-	                           FilmService filmService) {
+	                           FilmService filmService, FileStorageService fileStorageService) {
 		this.festivalService = festivalService;
 		this.proiezioneService = proiezioneService;
 		this.filmService = filmService;
+		this.fileStorageService = fileStorageService;
 	}
 
 	// ===================== FUNZIONALITA' PUBBLICHE (Sezione 4.1) =====================
 
+	// Ricerca con filtri opzionali ed elenco impaginato (Sezione 9).
 	@GetMapping("/festival")
-	public String elenco(Model model) {
-		model.addAttribute("festival", this.festivalService.findAll());
+	public String elenco(@RequestParam(required = false) String nome,
+	                      @RequestParam(required = false) Integer anno,
+	                      @RequestParam(required = false) String citta,
+	                      @RequestParam(defaultValue = "0") int page,
+	                      Model model) {
+		Page<Festival> festivalPage = this.festivalService.cerca(nome, anno, citta,
+			PageRequest.of(page, DIMENSIONE_PAGINA, Sort.by("dataInizio").descending()));
+		model.addAttribute("festivalPage", festivalPage);
+		model.addAttribute("nome", nome);
+		model.addAttribute("anno", anno);
+		model.addAttribute("citta", citta);
 		return "festival/list";
 	}
 
@@ -64,11 +83,13 @@ public class FestivalController {
 	}
 
 	@PostMapping("/admin/festival")
-	public String crea(@Valid @ModelAttribute("festival") Festival festival, BindingResult bindingResult) {
+	public String crea(@Valid @ModelAttribute("festival") Festival festival, BindingResult bindingResult,
+	                    @RequestParam(required = false) MultipartFile immagine) {
 		if (bindingResult.hasErrors()) {
 			return "admin/festival/form";
 		}
-		Festival salvato = this.festivalService.salva(festival);
+		String nomeFile = this.fileStorageService.salva(immagine);
+		Festival salvato = this.festivalService.salva(festival, nomeFile);
 		return "redirect:/festival/" + salvato.getId();
 	}
 
@@ -84,12 +105,13 @@ public class FestivalController {
 
 	@PostMapping("/admin/festival/{id}")
 	public String aggiorna(@PathVariable Long id, @Valid @ModelAttribute("festival") Festival festivalForm,
-	                        BindingResult bindingResult) {
+	                        BindingResult bindingResult, @RequestParam(required = false) MultipartFile immagine) {
 		if (bindingResult.hasErrors()) {
 			festivalForm.setId(id);
 			return "admin/festival/form";
 		}
-		Festival aggiornato = this.festivalService.aggiorna(id, festivalForm);
+		String nomeFile = this.fileStorageService.salva(immagine);
+		Festival aggiornato = this.festivalService.aggiorna(id, festivalForm, nomeFile);
 		return "redirect:/festival/" + aggiornato.getId();
 	}
 

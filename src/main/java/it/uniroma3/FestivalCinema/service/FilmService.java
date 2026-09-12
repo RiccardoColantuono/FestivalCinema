@@ -3,6 +3,8 @@ package it.uniroma3.FestivalCinema.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +29,10 @@ public class FilmService {
 		return this.filmRepository.findAll();
 	}
 
+	// Ricerca per titolo, genere o regista (Sezione 9), impaginata.
 	@Transactional(readOnly = true)
-	public List<Film> cerca(String titolo, String genere, Integer anno) {
-		return this.filmRepository.cercaConFiltri(titolo, genere, anno);
+	public Page<Film> cerca(String titolo, String genere, Integer anno, String regista, Pageable pageable) {
+		return this.filmRepository.cercaConFiltri(titolo, genere, anno, regista, pageable);
 	}
 
 	@Transactional(readOnly = true)
@@ -44,17 +47,29 @@ public class FilmService {
 		return this.filmRepository.findByFestivalIdWithRegistaJoinFetch(festivalId);
 	}
 
-	@Transactional
 	public Film salva(Film film, Long registaId) {
+		return salva(film, registaId, null);
+	}
+
+	// L'overload con locandina serve al form multipart del sito Thymeleaf;
+	// l'API REST (FilmApiController) continua a usare la versione senza file,
+	// dato che la creazione via JSON non prevede upload nello stesso passaggio.
+	@Transactional
+	public Film salva(Film film, Long registaId, String locandina) {
 		film.setId(null);
 		Regista regista = this.registaRepository.findById(registaId)
 			.orElseThrow(() -> new IllegalArgumentException("Regista non trovato con id " + registaId));
 		film.setRegista(regista);
+		film.setLocandina(locandina);
 		return this.filmRepository.save(film);
 	}
 
-	@Transactional
 	public Film aggiorna(Long id, Film datiAggiornati, Long registaId) {
+		return aggiorna(id, datiAggiornati, registaId, null);
+	}
+
+	@Transactional
+	public Film aggiorna(Long id, Film datiAggiornati, Long registaId, String nuovaLocandina) {
 		Film film = this.filmRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("Film non trovato con id " + id));
 
@@ -69,7 +84,18 @@ public class FilmService {
 				.orElseThrow(() -> new IllegalArgumentException("Regista non trovato con id " + registaId));
 			film.setRegista(regista);
 		}
+		if (nuovaLocandina != null) {
+			film.setLocandina(nuovaLocandina);
+		}
 
+		return film;
+	}
+
+	@Transactional
+	public Film aggiornaLocandina(Long id, String locandina) {
+		Film film = this.filmRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("Film non trovato con id " + id));
+		film.setLocandina(locandina);
 		return film;
 	}
 

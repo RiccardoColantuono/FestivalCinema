@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,10 +22,13 @@ import it.uniroma3.FestivalCinema.service.SalaService;
 
 // Programmazione delle proiezioni (Sezione 4.3): caso d'uso transazionale
 // multi-entita' gia' implementato in ProiezioneService.programmaProiezione(...);
-// questo controller e' il solo strato di presentazione Thymeleaf per l'admin,
-// raggiunto dai pulsanti presenti in festival/show.html.
+// questo controller e' anche lo strato di presentazione Thymeleaf per l'admin
+// (raggiunto dai pulsanti in festival/show.html) e per la ricerca pubblica delle
+// proiezioni per data (Sezione 9).
 @Controller
 public class ProiezioneController {
+
+	private static final int DIMENSIONE_PAGINA = 15;
 
 	private final ProiezioneService proiezioneService;
 	private final FestivalService festivalService;
@@ -34,6 +40,21 @@ public class ProiezioneController {
 		this.festivalService = festivalService;
 		this.salaService = salaService;
 	}
+
+	// ===================== FUNZIONALITA' PUBBLICHE (Sezione 4.1, 9) =====================
+
+	@GetMapping("/proiezioni")
+	public String elenco(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
+	                      @RequestParam(defaultValue = "0") int page,
+	                      Model model) {
+		Page<Proiezione> proiezioniPage = this.proiezioneService.cerca(data, null,
+			PageRequest.of(page, DIMENSIONE_PAGINA));
+		model.addAttribute("proiezioniPage", proiezioniPage);
+		model.addAttribute("data", data);
+		return "proiezione/list";
+	}
+
+	// ===================== FUNZIONALITA' ADMIN (Sezione 4.3) =====================
 
 	@GetMapping("/admin/proiezioni/nuova")
 	public String formNuova(@RequestParam Long festivalId, Model model) {

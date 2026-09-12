@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('Proiezioni')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: navbar}"></nav>
+
+<div class="container">
+	<h2 class="mb-4">🕒 Proiezioni</h2>
+
+	<!-- Ricerca delle proiezioni per data (Sezione 9) -->
+	<form class="row g-2 mb-4" method="get" th:action="@{/proiezioni}">
+		<div class="col-md-3">
+			<input type="date" name="data" class="form-control" th:value="${data}">
+		</div>
+		<div class="col-md-2">
+			<button type="submit" class="btn btn-primary w-100">Cerca</button>
+		</div>
+		<div class="col-md-2" th:if="${data}">
+			<a class="btn btn-outline-secondary w-100" th:href="@{/proiezioni}">Azzera</a>
+		</div>
+	</form>
+
+	<div class="alert alert-info" th:if="${proiezioniPage.empty}">Nessuna proiezione trovata.</div>
+
+	<table class="table table-striped" th:if="${!proiezioniPage.empty}">
+		<thead>
+			<tr>
+				<th>Data</th>
+				<th>Ora</th>
+				<th>Festival</th>
+				<th>Film</th>
+				<th>Sala</th>
+				<th>Stato</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="p : ${proiezioniPage.content}">
+				<td th:text="${p.data}">Data</td>
+				<td th:text="${p.ora}">Ora</td>
+				<td><a th:href="@{/festival/{id}(id=${p.festival.id})}" th:text="${p.festival.nome}">Festival</a></td>
+				<td><a th:href="@{/film/{id}(id=${p.film.id})}" th:text="${p.film.titolo}">Film</a></td>
+				<td th:text="${p.sala.nome}">Sala</td>
+				<td th:replace="~{fragments/common :: badgeStato(${p.stato})}">Stato</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<!-- Paginazione -->
+	<nav th:if="${proiezioniPage.totalPages > 1}" aria-label="Paginazione proiezioni">
+		<ul class="pagination justify-content-center">
+			<li class="page-item" th:classappend="${proiezioniPage.first} ? 'disabled'">
+				<a class="page-link" th:href="@{/proiezioni(data=${data},page=${proiezioniPage.number - 1})}">Precedente</a>
+			</li>
+			<li class="page-item" th:each="i : ${#numbers.sequence(0, proiezioniPage.totalPages - 1)}"
+			    th:classappend="${i == proiezioniPage.number} ? 'active'">
+				<a class="page-link" th:href="@{/proiezioni(data=${data},page=${i})}" th:text="${i + 1}">1</a>
+			</li>
+			<li class="page-item" th:classappend="${proiezioniPage.last} ? 'disabled'">
+				<a class="page-link" th:href="@{/proiezioni(data=${data},page=${proiezioniPage.number + 1})}">Successiva</a>
+			</li>
+		</ul>
+	</nav>
+</div>
+
+<footer th:replace="~{fragments/common :: footer}"></footer>
+</body>
+</html>

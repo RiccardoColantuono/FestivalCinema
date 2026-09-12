@@ -3,6 +3,8 @@ package it.uniroma3.FestivalCinema.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,12 @@ public class FestivalService {
 		return this.festivalRepository.findById(id);
 	}
 
+	// Ricerca con filtri opzionali (nome, anno, citta') impaginata (Sezione 9).
+	@Transactional(readOnly = true)
+	public Page<Festival> cerca(String nome, Integer anno, String citta, Pageable pageable) {
+		return this.festivalRepository.cercaConFiltri(nome, anno, citta, pageable);
+	}
+
 	// Dettaglio festival con film gia' caricati in un'unica query (Sezione 4.1:
 	// "il dettaglio di un festival deve permettere di accedere ai film associati")
 	@Transactional(readOnly = true)
@@ -44,17 +52,26 @@ public class FestivalService {
 		return this.festivalRepository.findByIdWithProgrammaJoinFetch(id);
 	}
 
-	@Transactional
 	public Festival salva(Festival festival) {
+		return salva(festival, null);
+	}
+
+	@Transactional
+	public Festival salva(Festival festival, String immagineCopertina) {
 		festival.setId(null);
 		if (festival.getDataFine().isBefore(festival.getDataInizio())) {
 			throw new IllegalArgumentException("La data di fine non puo' precedere la data di inizio");
 		}
+		festival.setImmagineCopertina(immagineCopertina);
 		return this.festivalRepository.save(festival);
 	}
 
-	@Transactional
 	public Festival aggiorna(Long id, Festival datiAggiornati) {
+		return aggiorna(id, datiAggiornati, null);
+	}
+
+	@Transactional
+	public Festival aggiorna(Long id, Festival datiAggiornati, String nuovaImmagineCopertina) {
 		Festival festival = this.festivalRepository.findById(id)
 			.orElseThrow(() -> new IllegalArgumentException("Festival non trovato con id " + id));
 
@@ -64,7 +81,18 @@ public class FestivalService {
 		festival.setDataInizio(datiAggiornati.getDataInizio());
 		festival.setDataFine(datiAggiornati.getDataFine());
 		festival.setDescrizione(datiAggiornati.getDescrizione());
+		if (nuovaImmagineCopertina != null) {
+			festival.setImmagineCopertina(nuovaImmagineCopertina);
+		}
 
+		return festival;
+	}
+
+	@Transactional
+	public Festival aggiornaImmagine(Long id, String immagineCopertina) {
+		Festival festival = this.festivalRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("Festival non trovato con id " + id));
+		festival.setImmagineCopertina(immagineCopertina);
 		return festival;
 	}
 

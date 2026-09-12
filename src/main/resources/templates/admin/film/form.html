@@ -8,7 +8,11 @@
 	<h2 class="mb-4" th:text="${film.id} == null ? 'Nuovo film' : 'Modifica film'">Film</h2>
 
 	<form th:action="${film.id} == null ? @{/admin/film} : @{/admin/film/{id}(id=${film.id})}"
-	      th:object="${film}" method="post">
+	      th:object="${film}" method="post" enctype="multipart/form-data">
+
+		<div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+			<div th:each="errore : ${#fields.errors('*')}" th:text="${errore}">Errore</div>
+		</div>
 
 		<div class="mb-3">
 			<label class="form-label">Titolo</label>
@@ -41,6 +45,12 @@
 				<option th:each="r : ${registi}" th:value="${r.id}"
 				        th:text="${r.nome} + ' ' + ${r.cognome}">Regista</option>
 			</select>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Locandina</label>
+			<input type="file" name="locandinaFile" class="form-control" accept="image/*">
+			<img th:if="${film.locandina}" th:src="@{'/uploads/' + ${film.locandina}}"
+			     class="mt-2 rounded" style="max-height: 120px;" alt="Locandina attuale">
 		</div>
 
 		<button type="submit" class="btn btn-primary">Salva</button>

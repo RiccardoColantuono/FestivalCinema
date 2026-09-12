@@ -6,14 +6,19 @@
 
 <div class="container">
 	<div class="d-flex justify-content-between align-items-start">
-		<div>
-			<h1 th:text="${film.titolo}">Titolo</h1>
-			<p class="text-muted" th:text="${film.anno} + ' • ' + ${film.genere} + ' • ' + ${film.durata} + ' min • ' + ${film.paeseProduzione}">
-				Dettagli
-			</p>
-			<p th:if="${film.regista != null}">
-				Regia di <strong th:text="${film.regista.nome} + ' ' + ${film.regista.cognome}">Regista</strong>
-			</p>
+		<div class="d-flex gap-3">
+			<img th:if="${film.locandina}" th:src="@{'/uploads/' + ${film.locandina}}"
+			     style="width: 140px; height: 200px; object-fit: cover;" class="rounded" alt="Locandina">
+			<div>
+				<h1 th:text="${film.titolo}">Titolo</h1>
+				<p class="mb-1">
+					<span class="text-muted" th:text="${film.anno} + ' • ' + ${film.durata} + ' min • ' + ${film.paeseProduzione}">Dettagli</span>
+					<span th:if="${film.genere}" th:replace="~{fragments/common :: badgeGenere(${film.genere})}"></span>
+				</p>
+				<p th:if="${film.regista != null}">
+					🎬 Regia di <strong th:text="${film.regista.nome} + ' ' + ${film.regista.cognome}">Regista</strong>
+				</p>
+			</div>
 		</div>
 		<div sec:authorize="hasAuthority('ADMIN')" class="text-nowrap">
 			<a class="btn btn-outline-secondary" th:href="@{/admin/film/{id}/modifica(id=${film.id})}">Modifica</a>
@@ -23,7 +28,24 @@
 		</div>
 	</div>
 
-	<h3 class="mt-4">Recensioni</h3>
+	<!-- Statistiche sulle recensioni -->
+	<div class="mt-3" th:if="${statistiche.numeroRecensioni > 0}">
+		<strong th:text="${#numbers.formatDecimal(statistiche.votoMedio, 1, 1)} + '/5'">4.5/5</strong>
+		<span class="text-muted">(<span th:text="${statistiche.numeroRecensioni}">10</span> recensioni)</span>
+		<div class="mt-1" style="max-width: 300px;">
+			<div class="d-flex align-items-center gap-2 small" th:each="voto : ${#numbers.sequence(5, 1, -1)}">
+				<span style="width: 3em;" th:text="${voto} + ' ★'">5 ★</span>
+				<div class="progress flex-grow-1" style="height: 8px;">
+					<div class="progress-bar" role="progressbar"
+					     th:style="${'width: ' + (statistiche.numeroRecensioni > 0 ? (statistiche.distribuzioneVoti.get(voto) * 100 / statistiche.numeroRecensioni) : 0) + '%'}"></div>
+				</div>
+				<span style="width: 2em;" th:text="${statistiche.distribuzioneVoti.get(voto)}">0</span>
+			</div>
+		</div>
+	</div>
+	<p class="text-muted mt-3" th:if="${statistiche.numeroRecensioni == 0}">Nessuna recensione ancora.</p>
+
+	<h3 class="mt-4">💬 Recensioni</h3>
 	<div class="alert alert-light border" th:if="${#lists.isEmpty(recensioni)}">Nessuna recensione ancora.</div>
 	<div class="card mb-3" th:each="r : ${recensioni}">
 		<div class="card-body">
@@ -43,7 +65,7 @@
 
 	<div sec:authorize="isAuthenticated()" class="card mt-4">
 		<div class="card-body">
-			<h5 class="card-title">Lascia una recensione</h5>
+			<h5 class="card-title">✍️ Lascia una recensione</h5>
 			<form th:action="@{/film/{id}/recensioni(id=${film.id})}" th:object="${nuovaRecensione}" method="post">
 				<div class="mb-2">
 					<label class="form-label">Voto (1-5)</label>

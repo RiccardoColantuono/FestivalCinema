@@ -22,7 +22,7 @@ export default function RegisterPage() {
 
 	return (
 		<div className="container">
-			<h2>Registrati</h2>
+			<h2>🎉 Registrati</h2>
 			<form className="form-box" onSubmit={handleSubmit}>
 				<label>
 					Username

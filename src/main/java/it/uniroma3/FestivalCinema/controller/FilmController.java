@@ -4,6 +4,9 @@ import java.beans.PropertyEditorSupport;
 import java.security.Principal;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,10 +18,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import it.uniroma3.FestivalCinema.model.Film;
 import it.uniroma3.FestivalCinema.model.Recensione;
 import it.uniroma3.FestivalCinema.model.Regista;
+import it.uniroma3.FestivalCinema.service.FileStorageService;
 import it.uniroma3.FestivalCinema.service.FilmService;
 import it.uniroma3.FestivalCinema.service.RecensioneService;
 import it.uniroma3.FestivalCinema.service.RegistaService;
@@ -27,25 +32,38 @@ import jakarta.validation.Valid;
 @Controller
 public class FilmController {
 
+	private static final int DIMENSIONE_PAGINA = 12;
+
 	private final FilmService filmService;
 	private final RecensioneService recensioneService;
 	private final RegistaService registaService;
+	private final FileStorageService fileStorageService;
 
 	public FilmController(FilmService filmService, RecensioneService recensioneService,
-	                       RegistaService registaService) {
+	                       RegistaService registaService, FileStorageService fileStorageService) {
 		this.filmService = filmService;
 		this.recensioneService = recensioneService;
 		this.registaService = registaService;
+		this.fileStorageService = fileStorageService;
 	}
 
 	// ===================== FUNZIONALITA' PUBBLICHE (Sezione 4.1) =====================
 
+	// Ricerca per titolo, genere o regista, con elenco impaginato (Sezione 9).
 	@GetMapping("/film")
 	public String elenco(@RequestParam(required = false) String titolo,
 	                      @RequestParam(required = false) String genere,
 	                      @RequestParam(required = false) Integer anno,
+	                      @RequestParam(required = false) String regista,
+	                      @RequestParam(defaultValue = "0") int page,
 	                      Model model) {
-		model.addAttribute("film", this.filmService.cerca(titolo, genere, anno));
+		Page<Film> filmPage = this.filmService.cerca(titolo, genere, anno, regista,
+			PageRequest.of(page, DIMENSIONE_PAGINA, Sort.by("titolo")));
+		model.addAttribute("filmPage", filmPage);
+		model.addAttribute("titolo", titolo);
+		model.addAttribute("genere", genere);
+		model.addAttribute("anno", anno);
+		model.addAttribute("regista", regista);
 		return "film/list";
 	}
 
@@ -56,6 +74,7 @@ public class FilmController {
 		model.addAttribute("film", film);
 		model.addAttribute("recensioni", this.recensioneService.findByFilm(id));
 		model.addAttribute("nuovaRecensione", new Recensione());
+		model.addAttribute("statistiche", this.recensioneService.statistichePerFilm(id));
 		return "film/show";
 	}
 
@@ -112,12 +131,14 @@ public class FilmController {
 	}
 
 	@PostMapping("/admin/film")
-	public String crea(@Valid @ModelAttribute("film") Film film, BindingResult bindingResult, Model model) {
+	public String crea(@Valid @ModelAttribute("film") Film film, BindingResult bindingResult,
+	                    @RequestParam(required = false) MultipartFile locandinaFile, Model model) {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute("registi", this.registaService.findAll());
 			return "admin/film/form";
 		}
-		Film salvato = this.filmService.salva(film, film.getRegista().getId());
+		String nomeFile = this.fileStorageService.salva(locandinaFile);
+		Film salvato = this.filmService.salva(film, film.getRegista().getId(), nomeFile);
 		return "redirect:/film/" + salvato.getId();
 	}
 
@@ -134,13 +155,15 @@ public class FilmController {
 
 	@PostMapping("/admin/film/{id}")
 	public String aggiorna(@PathVariable Long id, @Valid @ModelAttribute("film") Film filmForm,
-	                        BindingResult bindingResult, Model model) {
+	                        BindingResult bindingResult,
+	                        @RequestParam(required = false) MultipartFile locandinaFile, Model model) {
 		if (bindingResult.hasErrors()) {
 			filmForm.setId(id);
 			model.addAttribute("registi", this.registaService.findAll());
 			return "admin/film/form";
 		}
-		Film aggiornato = this.filmService.aggiorna(id, filmForm, filmForm.getRegista().getId());
+		String nomeFile = this.fileStorageService.salva(locandinaFile);
+		Film aggiornato = this.filmService.aggiorna(id, filmForm, filmForm.getRegista().getId(), nomeFile);
 		return "redirect:/film/" + aggiornato.getId();
 	}
 

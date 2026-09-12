@@ -60,9 +60,18 @@ body {
 	text-decoration: none;
 }
 
-.nav-links a:hover, .nav-auth a:hover {
+.nav-auth a:hover {
 	color: white;
 }
+
+/* Un colore per categoria di navigazione, coerente con il sito Thymeleaf
+   (vedi fragments/common.html lato backend) */
+.nav-links a.cat-festival { color: #e9b8ff; }
+.nav-links a.cat-film { color: #8ecbff; }
+.nav-links a.cat-proiezioni { color: #ffc182; }
+.nav-links a.cat-statistiche { color: #8de6b0; }
+.nav-links a.cat-admin { color: #ffb3b3; }
+.nav-links a:hover { filter: brightness(1.3); }
 
 .nav-auth {
 	display: flex;
@@ -114,6 +123,26 @@ h1, h2, h3 {
 	color: var(--muted);
 	font-size: 0.9rem;
 	margin: 0 0 0.75rem;
+}
+
+.card-image {
+	width: 100%;
+	height: 160px;
+	object-fit: cover;
+	border-radius: 6px;
+	margin-bottom: 0.6rem;
+}
+
+.paginazione {
+	display: flex;
+	gap: 0.4rem;
+	flex-wrap: wrap;
+	margin: 1.5rem 0;
+}
+
+.paginazione button:disabled {
+	opacity: 0.4;
+	cursor: default;
 }
 
 .btn {
@@ -204,4 +233,47 @@ form.form-box input, form.form-box select, form.form-box textarea {
 
 .admin-section {
 	margin-bottom: 2.5rem;
+}
+
+/* Badge genere film: stesso stile per tutti, l'emoji da' la varieta' */
+.badge-genere {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3em;
+	background: #fff3cd;
+	color: #664d03;
+	border-radius: 999px;
+	padding: 0.15rem 0.65rem;
+	font-size: 0.8rem;
+	font-weight: 600;
+}
+
+/* Badge stato proiezione */
+.badge-stato {
+	border-radius: 999px;
+	padding: 0.2rem 0.6rem;
+	font-size: 0.8rem;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.badge-stato.stato-scheduled { background: #cfe2ff; color: #084298; }
+.badge-stato.stato-completed { background: #d1e7dd; color: #0f5132; }
+.badge-stato.stato-cancelled { background: #f8d7da; color: #842029; }
+
+/* Riquadri colorati della home */
+.categoria-tile {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 1.25rem 1rem;
+	text-align: center;
+	text-decoration: none;
+	color: var(--text);
+	font-weight: 600;
+}
+
+.categoria-tile .emoji {
+	font-size: 2rem;
 }

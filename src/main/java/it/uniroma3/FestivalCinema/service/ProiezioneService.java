@@ -1,8 +1,11 @@
 package it.uniroma3.FestivalCinema.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,6 +80,12 @@ public class ProiezioneService {
 	@Transactional(readOnly = true)
 	public Optional<Proiezione> findById(Long id) {
 		return this.proiezioneRepository.findById(id);
+	}
+
+	// Ricerca delle proiezioni per data, impaginata (Sezione 9).
+	@Transactional(readOnly = true)
+	public Page<Proiezione> cerca(LocalDate data, Long festivalId, Pageable pageable) {
+		return this.proiezioneRepository.cerca(data, festivalId, pageable);
 	}
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
