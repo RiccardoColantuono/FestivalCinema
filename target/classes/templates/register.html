@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('Registrati')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: navbar}"></nav>
+
+<div class="container" style="max-width: 400px;">
+	<h2 class="mb-4">Crea un account</h2>
+
+	<form th:action="@{/register}" method="post">
+		<div class="mb-3">
+			<label class="form-label">Username</label>
+			<input type="text" name="username" class="form-control" minlength="3" maxlength="50" required>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Password</label>
+			<input type="password" name="password" class="form-control" minlength="6" required>
+			<div class="form-text">Almeno 6 caratteri.</div>
+		</div>
+		<button type="submit" class="btn btn-primary w-100">Registrati</button>
+	</form>
+
+	<p class="mt-3 text-center">
+		Hai gia' un account? <a th:href="@{/login}">Accedi</a>
+	</p>
+</div>
+
+<footer th:replace="~{fragments/common :: footer}"></footer>
+</body>
+</html>

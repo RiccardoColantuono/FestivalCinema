@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('Home')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: navbar}"></nav>
+
+<div class="container">
+	<div class="p-5 mb-4 bg-body-tertiary rounded-3">
+		<h1 class="display-5 fw-bold">Festival Cinema</h1>
+		<p class="col-md-8 fs-4">
+			Scopri i festival cinematografici in programma, sfoglia i film partecipanti,
+			consulta il programma delle proiezioni e leggi le recensioni della community.
+		</p>
+		<a class="btn btn-primary btn-lg" th:href="@{/festival}">Vai ai festival</a>
+	</div>
+</div>
+
+<footer th:replace="~{fragments/common :: footer}"></footer>
+</body>
+</html>

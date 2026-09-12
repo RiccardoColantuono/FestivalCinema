@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('Film')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: navbar}"></nav>
+
+<div class="container">
+	<h2 class="mb-4">Film</h2>
+
+	<form class="row g-2 mb-4" method="get" th:action="@{/film}">
+		<div class="col-md-4">
+			<input type="text" name="titolo" class="form-control" placeholder="Cerca per titolo" th:value="${param.titolo}">
+		</div>
+		<div class="col-md-3">
+			<input type="text" name="genere" class="form-control" placeholder="Genere" th:value="${param.genere}">
+		</div>
+		<div class="col-md-2">
+			<input type="number" name="anno" class="form-control" placeholder="Anno" th:value="${param.anno}">
+		</div>
+		<div class="col-md-2">
+			<button type="submit" class="btn btn-primary w-100">Cerca</button>
+		</div>
+	</form>
+
+	<div class="alert alert-info" th:if="${#lists.isEmpty(film)}">Nessun film trovato.</div>
+
+	<div class="row row-cols-1 row-cols-md-3 g-4">
+		<div class="col" th:each="f : ${film}">
+			<div class="card h-100">
+				<div class="card-body">
+					<h5 class="card-title" th:text="${f.titolo}">Titolo</h5>
+					<h6 class="card-subtitle mb-2 text-muted" th:text="${f.anno} + ' • ' + ${f.genere}">Anno - Genere</h6>
+					<p class="card-text small"
+					   th:text="${f.regista != null ? f.regista.nome + ' ' + f.regista.cognome : ''}">Regista</p>
+					<a th:href="@{/film/{id}(id=${f.id})}" class="btn btn-outline-primary">Dettagli</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer th:replace="~{fragments/common :: footer}"></footer>
+</body>
+</html>

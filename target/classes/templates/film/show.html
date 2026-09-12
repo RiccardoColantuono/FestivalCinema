@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/common :: head(${film.titolo})}"></head>
+<body>
+<nav th:replace="~{fragments/common :: navbar}"></nav>
+
+<div class="container">
+	<h1 th:text="${film.titolo}">Titolo</h1>
+	<p class="text-muted" th:text="${film.anno} + ' • ' + ${film.genere} + ' • ' + ${film.durata} + ' min • ' + ${film.paeseProduzione}">
+		Dettagli
+	</p>
+	<p th:if="${film.regista != null}">
+		Regia di <strong th:text="${film.regista.nome} + ' ' + ${film.regista.cognome}">Regista</strong>
+	</p>
+
+	<h3 class="mt-4">Recensioni</h3>
+	<div class="alert alert-light border" th:if="${#lists.isEmpty(recensioni)}">Nessuna recensione ancora.</div>
+	<div class="card mb-3" th:each="r : ${recensioni}">
+		<div class="card-body">
+			<h6 class="card-subtitle mb-1">
+				<span th:text="${r.autore.username}">utente</span>
+				&nbsp;-&nbsp;<span th:text="${r.voto} + '/5'">voto</span>
+			</h6>
+			<p class="card-text" th:text="${r.testo}">Testo recensione</p>
+			<form sec:authorize="isAuthenticated()"
+			      th:if="${#authentication.name == r.autore.username}"
+			      th:action="@{/recensioni/{id}/elimina(id=${r.id})}" method="post">
+				<input type="hidden" name="filmId" th:value="${film.id}">
+				<button type="submit" class="btn btn-sm btn-outline-danger">Elimina</button>
+			</form>
+		</div>
+	</div>
+
+	<div sec:authorize="isAuthenticated()" class="card mt-4">
+		<div class="card-body">
+			<h5 class="card-title">Lascia una recensione</h5>
+			<form th:action="@{/film/{id}/recensioni(id=${film.id})}" th:object="${nuovaRecensione}" method="post">
+				<div class="mb-2">
+					<label class="form-label">Voto (1-5)</label>
+					<input type="number" th:field="*{voto}" min="1" max="5" class="form-control" required>
+				</div>
+				<div class="mb-2">
+					<label class="form-label">Testo</label>
+					<textarea th:field="*{testo}" class="form-control" rows="3" required></textarea>
+				</div>
+				<button type="submit" class="btn btn-primary">Invia recensione</button>
+			</form>
+		</div>
+	</div>
+	<p class="mt-3" sec:authorize="isAnonymous()">
+		<a th:href="@{/login}">Accedi</a> per lasciare una recensione.
+	</p>
+</div>
+
+<footer th:replace="~{fragments/common :: footer}"></footer>
+</body>
+</html>

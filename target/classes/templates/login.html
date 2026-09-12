@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('Accedi')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: navbar}"></nav>
+
+<div class="container" style="max-width: 400px;">
+	<h2 class="mb-4">Accedi</h2>
+
+	<div class="alert alert-success" th:if="${param.registrato}">
+		Registrazione completata, ora puoi accedere.
+	</div>
+	<div class="alert alert-danger" th:if="${param.error}">
+		Username o password non validi.
+	</div>
+	<div class="alert alert-info" th:if="${param.logout}">
+		Sei uscito correttamente.
+	</div>
+
+	<form th:action="@{/login}" method="post">
+		<div class="mb-3">
+			<label class="form-label">Username</label>
+			<input type="text" name="username" class="form-control" required>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Password</label>
+			<input type="password" name="password" class="form-control" required>
+		</div>
+		<button type="submit" class="btn btn-primary w-100">Accedi</button>
+	</form>
+
+	<p class="mt-3 text-center">
+		Non hai un account? <a th:href="@{/register}">Registrati</a>
+	</p>
+</div>
+
+<footer th:replace="~{fragments/common :: footer}"></footer>
+</body>
+</html>
