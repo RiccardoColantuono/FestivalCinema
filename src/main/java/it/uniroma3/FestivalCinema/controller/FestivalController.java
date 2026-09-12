@@ -10,9 +10,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import it.uniroma3.FestivalCinema.model.Festival;
+import it.uniroma3.FestivalCinema.model.Film;
 import it.uniroma3.FestivalCinema.service.FestivalService;
+import it.uniroma3.FestivalCinema.service.FilmService;
 import it.uniroma3.FestivalCinema.service.ProiezioneService;
 import jakarta.validation.Valid;
 
@@ -21,10 +24,13 @@ public class FestivalController {
 
 	private final FestivalService festivalService;
 	private final ProiezioneService proiezioneService;
+	private final FilmService filmService;
 
-	public FestivalController(FestivalService festivalService, ProiezioneService proiezioneService) {
+	public FestivalController(FestivalService festivalService, ProiezioneService proiezioneService,
+	                           FilmService filmService) {
 		this.festivalService = festivalService;
 		this.proiezioneService = proiezioneService;
+		this.filmService = filmService;
 	}
 
 	// ===================== FUNZIONALITA' PUBBLICHE (Sezione 4.1) =====================
@@ -41,6 +47,11 @@ public class FestivalController {
 			.orElseThrow(() -> new IllegalArgumentException("Festival non trovato con id " + id));
 		model.addAttribute("festival", festival);
 		model.addAttribute("proiezioni", this.proiezioneService.findByFestival(id));
+
+		List<Film> filmDisponibili = this.filmService.findAll();
+		filmDisponibili.removeAll(festival.getFilm());
+		model.addAttribute("filmDisponibili", filmDisponibili);
+
 		return "festival/show";
 	}
 
@@ -86,5 +97,18 @@ public class FestivalController {
 	public String elimina(@PathVariable Long id) {
 		this.festivalService.elimina(id);
 		return "redirect:/festival";
+	}
+
+	// Associazione/rimozione di un film dal programma del festival (Sezione 4.3).
+	@PostMapping("/admin/festival/{id}/film")
+	public String aggiungiFilm(@PathVariable Long id, @RequestParam Long filmId) {
+		this.festivalService.aggiungiFilm(id, filmId);
+		return "redirect:/festival/" + id;
+	}
+
+	@PostMapping("/admin/festival/{id}/film/{filmId}/elimina")
+	public String rimuoviFilm(@PathVariable Long id, @PathVariable Long filmId) {
+		this.festivalService.rimuoviFilm(id, filmId);
+		return "redirect:/festival/" + id;
 	}
 }

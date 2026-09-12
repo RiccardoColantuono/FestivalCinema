@@ -11,6 +11,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 /*
  * Permette al frontend React (Vite, http://localhost:5173) di chiamare gli
  * endpoint REST sotto /api/** esposti da questo backend (http://localhost:8080).
+ * L'autenticazione della SPA riusa il login a form/sessione gia' esposto per il
+ * sito Thymeleaf (POST /login, POST /logout): anche questi due path devono
+ * quindi essere raggiungibili in CORS con credenziali, non solo /api/**.
  */
 @Configuration
 public class CorsConfig {
@@ -25,6 +28,8 @@ public class CorsConfig {
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/api/**", configuration);
+		source.registerCorsConfiguration("/login", configuration);
+		source.registerCorsConfiguration("/logout", configuration);
 		return source;
 	}
 }

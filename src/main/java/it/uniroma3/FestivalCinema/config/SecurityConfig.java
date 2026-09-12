@@ -50,6 +50,15 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 			.cors(Customizer.withDefaults())
+			// La protezione CSRF di default si basa su un token legato alla sessione
+			// HTTP, pensato per form Thymeleaf same-origin (che lo ricevono gia'
+			// automaticamente via thymeleaf-extras-springsecurity6). Il frontend
+			// React (Sezione 10) e' pero' su un'altra origin e non avrebbe modo di
+			// leggere quel token: per le sole rotte che consuma (l'API e il login/
+			// logout a sessione condivisi con il sito Thymeleaf) il rischio residuo
+			// e' comunque mitigato dall'allowlist rigida di CorsConfig, che impedisce
+			// a un'origin diversa da localhost:5173 di completare queste richieste.
+			.csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/login", "/logout"))
 			// Sezione 5: funzionalita' pubbliche libere, recensioni protette,
 			// area /admin/** riservata al ruolo ADMIN.
 			.authorizeHttpRequests(auth -> auth
