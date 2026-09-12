@@ -46,4 +46,18 @@ public class RegistaService {
 
 		return regista;
 	}
+
+	// Eliminazione di un regista: impedita se ha film associati (Regista e'
+	// obbligatorio su Film, Sezione 3), per non lasciare film senza autore.
+	@Transactional
+	public void elimina(Long id) {
+		Regista regista = this.registaRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("Regista non trovato con id " + id));
+
+		if (!regista.getFilm().isEmpty()) {
+			throw new IllegalStateException("Impossibile eliminare il regista: ha film associati");
+		}
+
+		this.registaRepository.delete(regista);
+	}
 }

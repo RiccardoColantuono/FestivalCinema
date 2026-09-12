@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head(${regista.id} == null ? 'Nuovo regista' : 'Modifica regista')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: navbar}"></nav>
+
+<div class="container" style="max-width: 600px;">
+	<h2 class="mb-4" th:text="${regista.id} == null ? 'Nuovo regista' : 'Modifica regista'">Regista</h2>
+
+	<form th:action="${regista.id} == null ? @{/admin/registi} : @{/admin/registi/{id}(id=${regista.id})}"
+	      th:object="${regista}" method="post">
+
+		<div class="mb-3">
+			<label class="form-label">Nome</label>
+			<input type="text" th:field="*{nome}" class="form-control" required>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Cognome</label>
+			<input type="text" th:field="*{cognome}" class="form-control" required>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Data di nascita</label>
+			<input type="date" th:field="*{dataNascita}" class="form-control">
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Nazionalita'</label>
+			<input type="text" th:field="*{nazionalita}" class="form-control">
+		</div>
+
+		<button type="submit" class="btn btn-primary">Salva</button>
+		<a th:href="@{/admin/registi}" class="btn btn-outline-secondary">Annulla</a>
+	</form>
+</div>
+
+<footer th:replace="~{fragments/common :: footer}"></footer>
+</body>
+</html>

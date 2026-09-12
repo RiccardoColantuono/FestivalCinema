@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/common :: head('Film')}"></head>
 <body>
 <nav th:replace="~{fragments/common :: navbar}"></nav>
 
 <div class="container">
-	<h2 class="mb-4">Film</h2>
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<h2 class="mb-0">Film</h2>
+		<a sec:authorize="hasAuthority('ADMIN')" class="btn btn-success" th:href="@{/admin/film/nuovo}">+ Nuovo film</a>
+	</div>
 
 	<form class="row g-2 mb-4" method="get" th:action="@{/film}">
 		<div class="col-md-4">

@@ -81,4 +81,10 @@ public class FestivalController {
 		Festival aggiornato = this.festivalService.aggiorna(id, festivalForm);
 		return "redirect:/festival/" + aggiornato.getId();
 	}
+
+	@PostMapping("/admin/festival/{id}/elimina")
+	public String elimina(@PathVariable Long id) {
+		this.festivalService.elimina(id);
+		return "redirect:/festival";
+	}
 }

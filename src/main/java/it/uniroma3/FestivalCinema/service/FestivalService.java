@@ -68,6 +68,22 @@ public class FestivalService {
 		return festival;
 	}
 
+	// Eliminazione di un festival (Sezione 4.3): impedita se esistono proiezioni
+	// gia' programmate, per non lasciare dati orfani/incoerenti nel programma.
+	@Transactional
+	public void elimina(Long id) {
+		Festival festival = this.festivalRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("Festival non trovato con id " + id));
+
+		if (!festival.getProiezioni().isEmpty()) {
+			throw new IllegalStateException(
+				"Impossibile eliminare il festival: esistono proiezioni gia' programmate");
+		}
+
+		festival.getFilm().clear();
+		this.festivalRepository.delete(festival);
+	}
+
 	// Sezione 4.3: "associazione di un film a un festival"
 	@Transactional
 	public void aggiungiFilm(Long festivalId, Long filmId) {

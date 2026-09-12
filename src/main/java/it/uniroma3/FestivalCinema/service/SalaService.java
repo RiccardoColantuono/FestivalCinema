@@ -45,4 +45,18 @@ public class SalaService {
 
 		return sala;
 	}
+
+	// Eliminazione di una sala: impedita se esistono proiezioni gia' programmate.
+	@Transactional
+	public void elimina(Long id) {
+		Sala sala = this.salaRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("Sala non trovata con id " + id));
+
+		if (!sala.getProiezioni().isEmpty()) {
+			throw new IllegalStateException(
+				"Impossibile eliminare la sala: esistono proiezioni gia' programmate");
+		}
+
+		this.salaRepository.delete(sala);
+	}
 }

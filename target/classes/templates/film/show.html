@@ -5,13 +5,23 @@
 <nav th:replace="~{fragments/common :: navbar}"></nav>
 
 <div class="container">
-	<h1 th:text="${film.titolo}">Titolo</h1>
-	<p class="text-muted" th:text="${film.anno} + ' • ' + ${film.genere} + ' • ' + ${film.durata} + ' min • ' + ${film.paeseProduzione}">
-		Dettagli
-	</p>
-	<p th:if="${film.regista != null}">
-		Regia di <strong th:text="${film.regista.nome} + ' ' + ${film.regista.cognome}">Regista</strong>
-	</p>
+	<div class="d-flex justify-content-between align-items-start">
+		<div>
+			<h1 th:text="${film.titolo}">Titolo</h1>
+			<p class="text-muted" th:text="${film.anno} + ' • ' + ${film.genere} + ' • ' + ${film.durata} + ' min • ' + ${film.paeseProduzione}">
+				Dettagli
+			</p>
+			<p th:if="${film.regista != null}">
+				Regia di <strong th:text="${film.regista.nome} + ' ' + ${film.regista.cognome}">Regista</strong>
+			</p>
+		</div>
+		<div sec:authorize="hasAuthority('ADMIN')" class="text-nowrap">
+			<a class="btn btn-outline-secondary" th:href="@{/admin/film/{id}/modifica(id=${film.id})}">Modifica</a>
+			<form class="d-inline" th:action="@{/admin/film/{id}/elimina(id=${film.id})}" method="post">
+				<button type="submit" class="btn btn-outline-danger">Elimina</button>
+			</form>
+		</div>
+	</div>
 
 	<h3 class="mt-4">Recensioni</h3>
 	<div class="alert alert-light border" th:if="${#lists.isEmpty(recensioni)}">Nessuna recensione ancora.</div>

@@ -72,4 +72,24 @@ public class FilmService {
 
 		return film;
 	}
+
+	// Eliminazione di un film (Sezione 4.3): impedita se esistono proiezioni o
+	// recensioni collegate; rimossa l'eventuale associazione con i festival.
+	@Transactional
+	public void elimina(Long id) {
+		Film film = this.filmRepository.findById(id)
+			.orElseThrow(() -> new IllegalArgumentException("Film non trovato con id " + id));
+
+		if (!film.getProiezioni().isEmpty()) {
+			throw new IllegalStateException(
+				"Impossibile eliminare il film: esistono proiezioni gia' programmate");
+		}
+		if (!film.getRecensioni().isEmpty()) {
+			throw new IllegalStateException(
+				"Impossibile eliminare il film: esistono recensioni associate");
+		}
+
+		film.getFestival().forEach(festival -> festival.getFilm().remove(film));
+		this.filmRepository.delete(film);
+	}
 }

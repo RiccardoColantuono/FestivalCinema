@@ -13,6 +13,9 @@
 		<a class="navbar-brand" th:href="@{/}">Festival Cinema</a>
 		<div class="navbar-nav me-auto">
 			<a class="nav-link" th:href="@{/festival}">Festival</a>
+			<a class="nav-link" th:href="@{/film}">Film</a>
+			<a class="nav-link" sec:authorize="hasAuthority('ADMIN')" th:href="@{/admin/registi}">Registi</a>
+			<a class="nav-link" sec:authorize="hasAuthority('ADMIN')" th:href="@{/admin/sale}">Sale</a>
 		</div>
 		<div class="navbar-nav">
 			<span class="navbar-text text-light me-3" sec:authorize="isAuthenticated()">

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head(${film.id} == null ? 'Nuovo film' : 'Modifica film')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: navbar}"></nav>
+
+<div class="container" style="max-width: 600px;">
+	<h2 class="mb-4" th:text="${film.id} == null ? 'Nuovo film' : 'Modifica film'">Film</h2>
+
+	<form th:action="${film.id} == null ? @{/admin/film} : @{/admin/film/{id}(id=${film.id})}"
+	      th:object="${film}" method="post">
+
+		<div class="mb-3">
+			<label class="form-label">Titolo</label>
+			<input type="text" th:field="*{titolo}" class="form-control" required>
+		</div>
+		<div class="row mb-3">
+			<div class="col">
+				<label class="form-label">Anno</label>
+				<input type="number" th:field="*{anno}" class="form-control" required>
+			</div>
+			<div class="col">
+				<label class="form-label">Durata (minuti)</label>
+				<input type="number" th:field="*{durata}" class="form-control" required>
+			</div>
+		</div>
+		<div class="row mb-3">
+			<div class="col">
+				<label class="form-label">Genere</label>
+				<input type="text" th:field="*{genere}" class="form-control">
+			</div>
+			<div class="col">
+				<label class="form-label">Paese di produzione</label>
+				<input type="text" th:field="*{paeseProduzione}" class="form-control">
+			</div>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Regista</label>
+			<select th:field="*{regista}" class="form-select" required>
+				<option value="">-- seleziona un regista --</option>
+				<option th:each="r : ${registi}" th:value="${r.id}"
+				        th:text="${r.nome} + ' ' + ${r.cognome}">Regista</option>
+			</select>
+		</div>
+
+		<button type="submit" class="btn btn-primary">Salva</button>
+		<a th:href="@{/film}" class="btn btn-outline-secondary">Annulla</a>
+	</form>
+</div>
+
+<footer th:replace="~{fragments/common :: footer}"></footer>
+</body>
+</html>

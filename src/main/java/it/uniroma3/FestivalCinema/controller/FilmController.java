@@ -1,29 +1,41 @@
 package it.uniroma3.FestivalCinema.controller;
 
+import java.beans.PropertyEditorSupport;
 import java.security.Principal;
+import java.util.Optional;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import it.uniroma3.FestivalCinema.model.Film;
 import it.uniroma3.FestivalCinema.model.Recensione;
+import it.uniroma3.FestivalCinema.model.Regista;
 import it.uniroma3.FestivalCinema.service.FilmService;
 import it.uniroma3.FestivalCinema.service.RecensioneService;
+import it.uniroma3.FestivalCinema.service.RegistaService;
+import jakarta.validation.Valid;
 
 @Controller
 public class FilmController {
 
 	private final FilmService filmService;
 	private final RecensioneService recensioneService;
+	private final RegistaService registaService;
 
-	public FilmController(FilmService filmService, RecensioneService recensioneService) {
+	public FilmController(FilmService filmService, RecensioneService recensioneService,
+	                       RegistaService registaService) {
 		this.filmService = filmService;
 		this.recensioneService = recensioneService;
+		this.registaService = registaService;
 	}
 
 	// ===================== FUNZIONALITA' PUBBLICHE (Sezione 4.1) =====================
@@ -62,5 +74,79 @@ public class FilmController {
 			.anyMatch(a -> a.getAuthority().equals("ADMIN"));
 		this.recensioneService.elimina(recensioneId, authentication.getName(), isAdmin);
 		return "redirect:/film/" + filmId;
+	}
+
+	// ===================== FUNZIONALITA' ADMIN (Sezione 4.3) =====================
+
+	// Il form usa una <select> con l'id del regista come valore: questo binder
+	// converte quel valore in un Regista gestito prima della validazione, cosi'
+	// il vincolo @NotNull su Film.regista viene verificato sull'oggetto gia'
+	// risolto (senza questo binder il campo arriverebbe sempre nullo).
+	@InitBinder("film")
+	public void initBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(Regista.class, new PropertyEditorSupport() {
+			@Override
+			public void setAsText(String text) {
+				if (text == null || text.isBlank()) {
+					setValue(null);
+					return;
+				}
+				Regista regista = FilmController.this.registaService.findById(Long.valueOf(text))
+					.orElseThrow(() -> new IllegalArgumentException("Regista non trovato con id " + text));
+				setValue(regista);
+			}
+
+			@Override
+			public String getAsText() {
+				Regista regista = (Regista) getValue();
+				return regista == null ? "" : regista.getId().toString();
+			}
+		});
+	}
+
+	@GetMapping("/admin/film/nuovo")
+	public String formNuovo(Model model) {
+		model.addAttribute("film", new Film());
+		model.addAttribute("registi", this.registaService.findAll());
+		return "admin/film/form";
+	}
+
+	@PostMapping("/admin/film")
+	public String crea(@Valid @ModelAttribute("film") Film film, BindingResult bindingResult, Model model) {
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("registi", this.registaService.findAll());
+			return "admin/film/form";
+		}
+		Film salvato = this.filmService.salva(film, film.getRegista().getId());
+		return "redirect:/film/" + salvato.getId();
+	}
+
+	@GetMapping("/admin/film/{id}/modifica")
+	public String formModifica(@PathVariable Long id, Model model) {
+		Optional<Film> filmOptional = this.filmService.findById(id);
+		if (filmOptional.isEmpty()) {
+			return "redirect:/film";
+		}
+		model.addAttribute("film", filmOptional.get());
+		model.addAttribute("registi", this.registaService.findAll());
+		return "admin/film/form";
+	}
+
+	@PostMapping("/admin/film/{id}")
+	public String aggiorna(@PathVariable Long id, @Valid @ModelAttribute("film") Film filmForm,
+	                        BindingResult bindingResult, Model model) {
+		if (bindingResult.hasErrors()) {
+			filmForm.setId(id);
+			model.addAttribute("registi", this.registaService.findAll());
+			return "admin/film/form";
+		}
+		Film aggiornato = this.filmService.aggiorna(id, filmForm, filmForm.getRegista().getId());
+		return "redirect:/film/" + aggiornato.getId();
+	}
+
+	@PostMapping("/admin/film/{id}/elimina")
+	public String elimina(@PathVariable Long id) {
+		this.filmService.elimina(id);
+		return "redirect:/film";
 	}
 }

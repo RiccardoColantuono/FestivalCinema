@@ -12,6 +12,12 @@ import it.uniroma3.FestivalCinema.model.Film;
 
 public interface FilmRepository extends JpaRepository<Film, Long> {
 
+	// STRATEGIA 1 (baseline): nessun JOIN FETCH. Poiche' Film.regista e' EAGER
+	// (Sezione 8.1), Hibernate carica comunque il regista di ogni film, ma con
+	// una SELECT separata per ciascuno -> problema N+1, usato come confronto
+	// nello script di Sezione 8.2.
+	List<Film> findByFestivalId(Long festivalId);
+
 	// Ricerca con filtri opzionali per l'elenco/ricerca film (Sezione 4.1, 9)
 	@Query("SELECT f FROM Film f WHERE "
 		+ "(:titolo IS NULL OR LOWER(f.titolo) LIKE LOWER(CONCAT('%', :titolo, '%'))) AND "
