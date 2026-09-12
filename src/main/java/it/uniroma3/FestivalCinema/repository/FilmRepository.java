@@ -18,9 +18,13 @@ public interface FilmRepository extends JpaRepository<Film, Long> {
 	// nello script di Sezione 8.2.
 	List<Film> findByFestivalId(Long festivalId);
 
-	// Ricerca con filtri opzionali per l'elenco/ricerca film (Sezione 4.1, 9)
+	// Ricerca con filtri opzionali per l'elenco/ricerca film (Sezione 4.1, 9).
+	// Il CAST esplicito su :titolo evita un errore di PostgreSQL ("function
+	// lower(bytea) does not exist"): quando il parametro e' null (nessun filtro
+	// sul titolo), il driver non riesce altrimenti a dedurne il tipo essendo
+	// riusato sia nel controllo IS NULL sia dentro LOWER/CONCAT.
 	@Query("SELECT f FROM Film f WHERE "
-		+ "(:titolo IS NULL OR LOWER(f.titolo) LIKE LOWER(CONCAT('%', :titolo, '%'))) AND "
+		+ "(:titolo IS NULL OR LOWER(f.titolo) LIKE LOWER(CONCAT('%', CAST(:titolo AS string), '%'))) AND "
 		+ "(:genere IS NULL OR f.genere = :genere) AND "
 		+ "(:anno IS NULL OR f.anno = :anno)")
 	List<Film> cercaConFiltri(@Param("titolo") String titolo,

@@ -25,7 +25,7 @@
 	<div class="alert alert-light border" th:if="${#lists.isEmpty(festival.film)}">
 		Nessun film ancora associato a questo festival.
 	</div>
-	<div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
+	<div class="row row-cols-1 row-cols-md-3 g-3 mb-3">
 		<div class="col" th:each="film : ${festival.film}">
 			<div class="card h-100">
 				<div class="card-body">
@@ -35,10 +35,26 @@
 						Dettagli
 					</p>
 					<a th:href="@{/film/{id}(id=${film.id})}" class="btn btn-sm btn-outline-primary">Dettagli film</a>
+					<form sec:authorize="hasAuthority('ADMIN')" class="d-inline"
+					      th:action="@{/admin/festival/{id}/film/{filmId}/elimina(id=${festival.id},filmId=${film.id})}"
+					      method="post">
+						<button type="submit" class="btn btn-sm btn-outline-danger">Rimuovi</button>
+					</form>
 				</div>
 			</div>
 		</div>
 	</div>
+	<form sec:authorize="hasAuthority('ADMIN')" th:if="${!#lists.isEmpty(filmDisponibili)}"
+	      class="d-flex gap-2 align-items-end mb-4" th:action="@{/admin/festival/{id}/film(id=${festival.id})}"
+	      method="post">
+		<div>
+			<label class="form-label small mb-0">Aggiungi un film al programma</label>
+			<select name="filmId" class="form-select form-select-sm" required>
+				<option th:each="f : ${filmDisponibili}" th:value="${f.id}" th:text="${f.titolo}">Film</option>
+			</select>
+		</div>
+		<button type="submit" class="btn btn-sm btn-success">Aggiungi</button>
+	</form>
 
 	<div class="d-flex justify-content-between align-items-center mt-4">
 		<h3 class="mb-0">Programma delle proiezioni</h3>
