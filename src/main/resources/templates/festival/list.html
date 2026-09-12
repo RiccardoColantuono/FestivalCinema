@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/common :: head('Festival')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: navbar}"></nav>
+
+<div class="container">
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<h2>Festival cinematografici</h2>
+		<a sec:authorize="hasAuthority('ADMIN')" class="btn btn-success" th:href="@{/admin/festival/nuovo}">
+			+ Nuovo festival
+		</a>
+	</div>
+
+	<div class="alert alert-info" th:if="${#lists.isEmpty(festival)}">
+		Nessun festival disponibile al momento.
+	</div>
+
+	<div class="row row-cols-1 row-cols-md-2 g-4">
+		<div class="col" th:each="f : ${festival}">
+			<div class="card h-100">
+				<div class="card-body">
+					<h5 class="card-title" th:text="${f.nome}">Nome festival</h5>
+					<h6 class="card-subtitle mb-2 text-muted"
+						th:text="${f.citta} + ' - ' + ${f.anno}">Citta - Anno</h6>
+					<p class="card-text" th:text="${f.dataInizio} + ' → ' + ${f.dataFine}">Date</p>
+					<a th:href="@{/festival/{id}(id=${f.id})}" class="btn btn-outline-primary">Dettagli</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<footer th:replace="~{fragments/common :: footer}"></footer>
+</body>
+</html>

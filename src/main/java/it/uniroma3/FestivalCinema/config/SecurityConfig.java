@@ -54,7 +54,7 @@ public class SecurityConfig {
 			// area /admin/** riservata al ruolo ADMIN.
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers(HttpMethod.GET,
-					"/", "/login", "/register",
+					"/", "/login", "/register", "/error",
 					"/festival", "/festival/**",
 					"/film", "/film/**",
 					"/api/**",

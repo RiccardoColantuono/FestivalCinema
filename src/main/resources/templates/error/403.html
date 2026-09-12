@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/common :: head('Accesso negato')}"></head>
+<body>
+<nav th:replace="~{fragments/common :: navbar}"></nav>
+<div class="container text-center py-5">
+	<h1 class="display-4">403</h1>
+	<p class="lead" th:text="${messaggio}">Non sei autorizzato a compiere questa operazione</p>
+	<a class="btn btn-primary" th:href="@{/}">Torna alla home</a>
+</div>
+<footer th:replace="~{fragments/common :: footer}"></footer>
+</body>
+</html>
