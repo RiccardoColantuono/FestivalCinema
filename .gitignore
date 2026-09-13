@@ -1,3 +1,4 @@
 # Locandine/immagini caricate dagli admin (vedi FileStorageService): file
 # binari generati a runtime, non vanno versionati.
 uploads/
+.claude/launch.json
