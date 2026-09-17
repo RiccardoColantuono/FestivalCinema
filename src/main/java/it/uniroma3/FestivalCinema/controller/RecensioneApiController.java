@@ -9,7 +9,7 @@ import it.uniroma3.FestivalCinema.model.Recensione;
 import it.uniroma3.FestivalCinema.service.RecensioneService;
 import jakarta.validation.Valid;
 
-// Sezione 4.2 / 5: un utente puo' modificare o eliminare esclusivamente le
+//  un utente puo' modificare o eliminare esclusivamente le
 // proprie recensioni; l'autorizzazione fine (autore/ADMIN) e' verificata nel Service.
 @RestController
 @RequestMapping("/api/recensioni")

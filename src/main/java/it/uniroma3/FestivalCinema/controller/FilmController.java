@@ -47,7 +47,7 @@ public class FilmController {
 		this.fileStorageService = fileStorageService;
 	}
 
-	// ===================== FUNZIONALITA' PUBBLICHE (Sezione 4.1) =====================
+	// ===================== FUNZIONALITA' PUBBLICHE  =====================
 
 	// Ricerca per titolo, genere o regista, con elenco impaginato (Sezione 9).
 	@GetMapping("/film")

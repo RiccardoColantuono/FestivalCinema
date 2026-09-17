@@ -40,7 +40,7 @@ import jakarta.persistence.PersistenceContext;
  * Le query SQL vengono contate con le Hibernate Statistics (nessuna
  * infrastruttura di benchmarking esterna, come richiesto dalla consegna).
  *
- * ESEGUIBILE DURANTE LA PROVA ORALE con:
+ * ESEGUIBILE  con:
  *   mvn test -Dtest=FetchStrategyBenchmarkTest
  * (richiede il database PostgreSQL configurato in application.properties attivo)
  */
