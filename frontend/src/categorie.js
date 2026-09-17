@@ -23,9 +23,9 @@ export function emojiGenere(genere) {
 }
 
 export const STATO_PROIEZIONE = {
-	SCHEDULED: { emoji: '🟢', etichetta: 'Programmata', classe: 'stato-scheduled' },
-	COMPLETED: { emoji: '✅', etichetta: 'Conclusa', classe: 'stato-completed' },
-	CANCELLED: { emoji: '❌', etichetta: 'Annullata', classe: 'stato-cancelled' },
+	SCHEDULED: { emoji: '', etichetta: 'Programmata', classe: 'stato-scheduled' },
+	COMPLETED: { emoji: '', etichetta: 'Conclusa', classe: 'stato-completed' },
+	CANCELLED: { emoji: '', etichetta: 'Annullata', classe: 'stato-cancelled' },
 }
 
 export function statoProiezione(stato) {

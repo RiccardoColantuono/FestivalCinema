@@ -88,7 +88,7 @@
 				<td th:text="${p.ora}">Ora</td>
 				<td th:text="${p.film.titolo}">Film</td>
 				<td th:text="${p.sala.nome}">Sala</td>
-				<td th:replace="~{fragments/common :: badgeStato(${p.stato})}">Stato</td>
+				<td th:insert="~{fragments/common :: badgeStato(${p.stato})}">Stato</td>
 				<td sec:authorize="hasAuthority('ADMIN')" class="text-end">
 					<a class="btn btn-sm btn-outline-secondary" th:href="@{/admin/proiezioni/{id}/modifica(id=${p.id})}">Modifica</a>
 					<form class="d-inline" th:action="@{/admin/proiezioni/{id}/elimina(id=${p.id})}" method="post">

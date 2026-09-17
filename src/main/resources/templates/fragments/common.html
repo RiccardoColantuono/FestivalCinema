@@ -86,10 +86,10 @@
 
 <!-- Badge dello stato di una proiezione -->
 <span th:fragment="badgeStato(stato)" class="badge-stato" th:classappend="'badge-stato-' + ${stato}"
-      th:switch="${stato}">
-	<span th:case="'SCHEDULED'">🟢 Programmata</span>
-	<span th:case="'COMPLETED'">✅ Conclusa</span>
-	<span th:case="'CANCELLED'">❌ Annullata</span>
+      th:switch="${stato.name()}">
+	<span th:case="'SCHEDULED'">Programmata</span>
+	<span th:case="'COMPLETED'">Conclusa</span>
+	<span th:case="'CANCELLED'">Annullata</span>
 	<span th:case="*" th:text="${stato}">Stato</span>
 </span>
 

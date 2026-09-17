@@ -40,7 +40,7 @@
 				<td><a th:href="@{/festival/{id}(id=${p.festival.id})}" th:text="${p.festival.nome}">Festival</a></td>
 				<td><a th:href="@{/film/{id}(id=${p.film.id})}" th:text="${p.film.titolo}">Film</a></td>
 				<td th:text="${p.sala.nome}">Sala</td>
-				<td th:replace="~{fragments/common :: badgeStato(${p.stato})}">Stato</td>
+				<td th:insert="~{fragments/common :: badgeStato(${p.stato})}">Stato</td>
 			</tr>
 		</tbody>
 	</table>

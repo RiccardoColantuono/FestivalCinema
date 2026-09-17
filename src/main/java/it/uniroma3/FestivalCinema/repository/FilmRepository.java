@@ -30,7 +30,7 @@ public interface FilmRepository extends JpaRepository<Film, Long> {
 	// un'associazione (f.regista.nome/cognome).
 	@Query(value = "SELECT f FROM Film f WHERE "
 		+ "(:titolo IS NULL OR LOWER(f.titolo) LIKE LOWER(CONCAT('%', CAST(:titolo AS string), '%'))) AND "
-		+ "(:genere IS NULL OR f.genere = :genere) AND "
+		+ "(:genere IS NULL OR LOWER(f.genere) LIKE LOWER(CONCAT('%', CAST(:genere AS string), '%'))) AND "
 		+ "(:anno IS NULL OR f.anno = :anno) AND "
 		+ "(:regista IS NULL OR ("
 		+ "  LOWER(f.regista.nome) LIKE LOWER(CONCAT('%', CAST(:regista AS string), '%')) OR "
@@ -38,7 +38,7 @@ public interface FilmRepository extends JpaRepository<Film, Long> {
 		+ "))",
 		countQuery = "SELECT COUNT(f) FROM Film f WHERE "
 		+ "(:titolo IS NULL OR LOWER(f.titolo) LIKE LOWER(CONCAT('%', CAST(:titolo AS string), '%'))) AND "
-		+ "(:genere IS NULL OR f.genere = :genere) AND "
+		+ "(:genere IS NULL OR LOWER(f.genere) LIKE LOWER(CONCAT('%', CAST(:genere AS string), '%'))) AND "
 		+ "(:anno IS NULL OR f.anno = :anno) AND "
 		+ "(:regista IS NULL OR ("
 		+ "  LOWER(f.regista.nome) LIKE LOWER(CONCAT('%', CAST(:regista AS string), '%')) OR "
